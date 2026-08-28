@@ -1167,3 +1167,118 @@ button {
     grid-template-columns: 1fr;
   }
 }
+
+/* Landing Screen */
+.landing-screen {
+  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.mode-toggle {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.toggle-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 500;
+}
+
+.toggle-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.toggle-btn {
+  padding: 10px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-2);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.toggle-btn:hover {
+  border-color: var(--accent);
+  color: var(--text-primary);
+}
+
+.toggle-btn.active {
+  border-color: var(--accent);
+  background: var(--bg-accent);
+  color: var(--text-accent);
+}
+
+.landing-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.landing-card {
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface-1);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.landing-card:hover {
+  border-color: var(--accent);
+  background: var(--surface-2);
+}
+
+.landing-card-buyer {
+  border-color: rgba(15, 157, 114, 0.3);
+}
+
+.landing-card-buyer:hover {
+  border-color: var(--protect);
+}
+
+.card-icon {
+  font-size: 32px;
+}
+
+.card-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.card-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.card-arrow {
+  font-size: 18px;
+  color: var(--accent);
+  margin-top: 0.5rem;
+}
+
+.landing-footer {
+  text-align: center;
+  padding-top: 1rem;
+}
+
+.footer-text {
+  font-size: 12px;
+  color: var(--text-muted);
+}
