@@ -8,7 +8,7 @@ import PayInvoice from './pages/PayInvoice';
 import Dashboard from './pages/Dashboard';
 import Transactions from './pages/Transactions';
 import RiskPanel from './pages/RiskPanel';
-import LandingScreen from './components/LandingScreen';
+import LandingScreen from './pages/LandingScreen';
 import './index.css';
 
 const pageInfo: Record<string, { title: string; subtitle: (connected: boolean) => string }> = {
@@ -39,22 +39,22 @@ function AppContent() {
   }
 
   const current = pageInfo[activePage];
-const subtitle = current.subtitle(!!merchantWallet);
+  const subtitle = current.subtitle(!!merchantWallet);
 
-if (!userRole) {
-  return (
-    <LandingScreen
-      onMerchant={() => setUserRole('merchant')}
-      onBuyer={() => {
-        setUserRole('buyer');
-        setActivePage('pay');
-      }}
-    />
-  );
-}
+  if (!userRole) {
+    return (
+      <LandingScreen
+        onMerchant={() => setUserRole('merchant')}
+        onBuyer={() => {
+          setUserRole('buyer');
+          setActivePage('pay');
+        }}
+      />
+    );
+  }
 
   function renderPage() {
-   switch (activePage) {
+    switch (activePage) {
       case 'dashboard':
         return <Dashboard onNavigate={setActivePage} />;
       case 'register':
@@ -65,7 +65,7 @@ if (!userRole) {
         return <PayInvoice />;
       case 'transactions':
         return <Transactions />;
-        case 'risk':
+      case 'risk':
         return <RiskPanel />;
       default:
         return (

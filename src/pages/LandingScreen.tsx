@@ -1,7 +1,30 @@
 import { useWallet } from '../context/WalletContext';
 
-export default function LandingScreen() {
+interface LandingScreenProps {
+  onMerchant: () => void;
+  onBuyer: () => void;
+}
+
+export default function LandingScreen({ onMerchant, onBuyer }: LandingScreenProps) {
   const { walletMode, setWalletMode, connectWalletForRole, connectEVMWallet } = useWallet();
+
+  const handleMerchantClick = () => {
+    if (walletMode === 'stacks') {
+      connectWalletForRole('merchant');
+    } else {
+      connectEVMWallet('merchant');
+    }
+    onMerchant();
+  };
+
+  const handleBuyerClick = () => {
+    if (walletMode === 'stacks') {
+      connectWalletForRole('buyer');
+    } else {
+      connectEVMWallet('buyer');
+    }
+    onBuyer();
+  };
 
   return (
     <div className="landing-screen">
@@ -28,11 +51,7 @@ export default function LandingScreen() {
       <div className="landing-cards">
         <div
           className="landing-card"
-          onClick={() =>
-            walletMode === 'stacks'
-              ? connectWalletForRole('merchant')
-              : connectEVMWallet('merchant')
-          }
+          onClick={handleMerchantClick}
         >
           <div className="card-icon">🏪</div>
           <div className="card-title">I'm a Merchant</div>
@@ -44,11 +63,7 @@ export default function LandingScreen() {
 
         <div
           className="landing-card landing-card-buyer"
-          onClick={() =>
-            walletMode === 'stacks'
-              ? connectWalletForRole('buyer')
-              : connectEVMWallet('buyer')
-          }
+          onClick={handleBuyerClick}
         >
           <div className="card-icon">👤</div>
           <div className="card-title">I'm a Buyer</div>
