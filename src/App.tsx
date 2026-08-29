@@ -1,3 +1,4 @@
+import DisputePanel from './pages/DisputePanel';
 import { useState } from 'react';
 import { WalletProvider, useWallet } from './context/WalletContext';
 import Sidebar from './components/Sidebar';
@@ -18,6 +19,7 @@ const pageInfo: Record<string, { title: string; subtitle: (connected: boolean) =
   register: { title: 'Register Merchant', subtitle: () => 'Set up your business profile' },
   transactions: { title: 'Transactions', subtitle: () => 'View your payment history' },
   risk: { title: 'Risk Panel', subtitle: () => 'Fraud detection and dispute tools' },
+  dispute: { title: 'Dispute Panel', subtitle: () => 'Resolve disputed payments' },
 };
 
 function AppContent() {
@@ -67,6 +69,8 @@ function AppContent() {
         return <Transactions />;
       case 'risk':
         return <RiskPanel />;
+      case 'dispute':
+        return <DisputePanel />;
       default:
         return (
           <div className="card">
