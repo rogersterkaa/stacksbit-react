@@ -1,3 +1,5 @@
+import CreatePaymentEVM from './pages/CreatePaymentEVM';
+import PayInvoiceEVM from './pages/PayInvoiceEVM';
 import DisputePanel from './pages/DisputePanel';
 import { useState } from 'react';
 import { WalletProvider, useWallet } from './context/WalletContext';
@@ -26,8 +28,7 @@ function AppContent() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activePage, setActivePage] = useState('dashboard');
   const [userRole, setUserRole] = useState<'merchant' | 'buyer' | null>(null);
-  const { merchantWallet, buyerWallet, connectWalletForRole } = useWallet();
-
+  const { merchantWallet, buyerWallet, connectWalletForRole, walletMode } = useWallet();
   const buyerPages = ['pay'];
   const relevantWallet = buyerPages.includes(activePage) ? buyerWallet : merchantWallet;
 
@@ -62,9 +63,9 @@ function AppContent() {
       case 'register':
         return <RegisterMerchant />;
       case 'create':
-        return <CreatePayment />;
+        return walletMode === 'stacks' ? <CreatePayment /> : <CreatePaymentEVM />;
       case 'pay':
-        return <PayInvoice />;
+        return walletMode === 'stacks' ? <PayInvoice /> : <PayInvoiceEVM />;
       case 'transactions':
         return <Transactions />;
       case 'risk':
