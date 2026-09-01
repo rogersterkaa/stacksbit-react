@@ -1,3 +1,13 @@
+import { useWallet } from '../context/WalletContext';
+
+interface TopbarProps {
+  pageTitle: string;
+  pageSubtitle: string;
+  onMenuClick: () => void;
+  walletAddress: string | null;
+  onConnectClick: () => void;
+}
+
 interface TopbarProps {
   pageTitle: string;
   pageSubtitle: string;

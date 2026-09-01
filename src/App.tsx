@@ -28,18 +28,18 @@ function AppContent() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activePage, setActivePage] = useState('dashboard');
   const [userRole, setUserRole] = useState<'merchant' | 'buyer' | null>(null);
-  const { merchantWallet, buyerWallet, connectWalletForRole, walletMode } = useWallet();
+  const { merchantWallet, buyerWallet, connectWallet, walletMode } = useWallet();
   const buyerPages = ['pay'];
   const relevantWallet = buyerPages.includes(activePage) ? buyerWallet : merchantWallet;
 
   async function handleConnectClick() {
-    try {
-      const role = buyerPages.includes(activePage) ? 'buyer' : 'merchant';
-      await connectWalletForRole(role);
-    } catch (err) {
-      console.error('Connect failed:', err);
-    }
+  try {
+    const role = buyerPages.includes(activePage) ? 'buyer' : 'merchant';
+    await connectWallet(role);
+  } catch (err) {
+    console.error('Connect failed:', err);
   }
+}
 
   const current = pageInfo[activePage];
   const subtitle = current.subtitle(!!merchantWallet);
