@@ -48,7 +48,7 @@ export async function createPayment(description: string) {
 export async function payInvoice(paymentId: number, amountBOT: string) {
   const contract = await getEVMContract();
   const amountWei = ethers.parseEther(amountBOT);
-  const tx = await contract.payInvoice(paymentId, { value: amountWei });
+  const tx = await contract.payInvoice(paymentId, { value: amountWei, gasLimit: 500000 });
   const receipt = await tx.wait();
   return receipt?.transactionHash;
 }
@@ -90,3 +90,4 @@ export async function ensureBOTChainNetwork() {
     }
   }
 }
+

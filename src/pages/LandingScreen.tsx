@@ -8,22 +8,30 @@ interface LandingScreenProps {
 export default function LandingScreen({ onMerchant, onBuyer }: LandingScreenProps) {
   const { walletMode, setWalletMode, connectWalletForRole, connectEVMWallet } = useWallet();
 
-  const handleMerchantClick = () => {
-    if (walletMode === 'stacks') {
-      connectWalletForRole('merchant');
-    } else {
-      connectEVMWallet('merchant');
+    const handleMerchantClick = async () => {
+    try {
+      if (walletMode === 'stacks') {
+        await connectWalletForRole('merchant');
+      } else {
+        await connectEVMWallet('merchant');
+      }
+      onMerchant();
+    } catch (err) {
+      console.error('Connection failed:', err);
     }
-    onMerchant();
   };
 
-  const handleBuyerClick = () => {
-    if (walletMode === 'stacks') {
-      connectWalletForRole('buyer');
-    } else {
-      connectEVMWallet('buyer');
+  const handleBuyerClick = async () => {
+    try {
+      if (walletMode === 'stacks') {
+        await connectWalletForRole('buyer');
+      } else {
+        await connectEVMWallet('buyer');
+      }
+      onBuyer();
+    } catch (err) {
+      console.error('Connection failed:', err);
     }
-    onBuyer();
   };
 
   return (

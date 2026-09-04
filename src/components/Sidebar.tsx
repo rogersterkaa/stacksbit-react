@@ -11,6 +11,7 @@ const merchantNav = [
   { id: 'register', label: '🏪 Register Merchant' },
   { id: 'transactions', label: '📋 Transactions' },
   { id: 'risk', label: '🛡️ Risk Panel' },
+  { id: 'dispute', label: '⚖️ Disputes' },
 ];
 
 const buyerNav = [
