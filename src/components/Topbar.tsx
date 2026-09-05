@@ -1,5 +1,3 @@
-import { useWallet } from '../context/WalletContext';
-
 interface TopbarProps {
   pageTitle: string;
   pageSubtitle: string;

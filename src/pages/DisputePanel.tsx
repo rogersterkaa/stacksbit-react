@@ -7,7 +7,7 @@ const STACKS_CONTRACT_ADDR = 'ST3GTDAAVRPKHCC45FFW0540MPTDHGWWRMB5DS4Q0';
 const STACKS_CONTRACT_NAME = 'stacksbit-gateway';
 
 export default function DisputePanel() {
-  const { merchantWallet, walletMode, connectWalletForRole } = useWallet();
+  const { merchantWallet, connectWalletForRole } = useWallet();
   const [paymentId, setPaymentId] = useState('');
   const [isResolving, setIsResolving] = useState(false);
   const [txId, setTxId] = useState<string | null>(null);
