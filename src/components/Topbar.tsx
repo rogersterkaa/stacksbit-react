@@ -1,10 +1,4 @@
-interface TopbarProps {
-  pageTitle: string;
-  pageSubtitle: string;
-  onMenuClick: () => void;
-  walletAddress: string | null;
-  onConnectClick: () => void;
-}
+import { useWallet } from '../context/WalletContext';
 
 interface TopbarProps {
   pageTitle: string;
@@ -21,6 +15,8 @@ export default function Topbar({
   walletAddress,
   onConnectClick,
 }: TopbarProps) {
+  const { walletMode } = useWallet();  // ← MOVE HOOK INSIDE HERE
+
   return (
     <header className="topbar">
       <button className="mobile-menu-btn" onClick={onMenuClick}>
@@ -33,7 +29,9 @@ export default function Topbar({
       </div>
 
       <div className="topbar-right">
-        <span className="badge badge-orange">Testnet</span>
+        <span className="badge badge-orange">
+          {walletMode === 'evm' ? 'BOT Chain Mainnet' : 'Stacks Testnet'}
+        </span>
         <button className="btn btn-primary btn-sm" onClick={onConnectClick}>
           {walletAddress
             ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`

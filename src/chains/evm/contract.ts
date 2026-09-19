@@ -56,8 +56,8 @@ export async function payInvoice(paymentId: number, amountBOT: string) {
 export async function confirmDelivery(paymentId: number) {
   const contract = await getEVMContract();
   const tx = await contract.confirmDelivery(paymentId);
-  const receipt = await tx.wait();
-  return receipt?.transactionHash;
+  await tx.wait();
+return tx.hash;
 }
 
 export async function ensureBOTChainNetwork() {
@@ -65,15 +65,43 @@ export async function ensureBOTChainNetwork() {
     throw new Error('MetaMask not detected');
   }
 
+  const ethereum = (window as any).ethereum;
+
+  // Normalize chain IDs because MetaMask may return lowercase hex.
+  const expectedChainId = BOT_CHAIN.chainIdHex.toLowerCase();
+
+  // Check current network
+  const currentChainId = String(
+    await ethereum.request({
+      method: 'eth_chainId',
+    })
+  ).toLowerCase();
+
+  console.log('BOT Chain network check:', {
+    currentChainId,
+    expectedChainId,
+    numericChainId: BOT_CHAIN.chainId,
+  });
+
+  // Already on BOT Chain Mainnet
+  if (currentChainId === expectedChainId) {
+    console.log('✅ Already connected to BOT Chain Mainnet');
+    return;
+  }
+
+  // Switch to BOT Chain Mainnet
   try {
-    await (window as any).ethereum.request({
+    await ethereum.request({
       method: 'wallet_switchEthereumChain',
-      params: [{ chainId: BOT_CHAIN.chainIdHex }],
+      params: [
+        {
+          chainId: BOT_CHAIN.chainIdHex,
+        },
+      ],
     });
   } catch (error: any) {
-    if (error.code === 4902) {
-      // Chain not added, add it
-      await (window as any).ethereum.request({
+    if (error?.code === 4902) {
+      await ethereum.request({
         method: 'wallet_addEthereumChain',
         params: [
           {
@@ -89,5 +117,24 @@ export async function ensureBOTChainNetwork() {
       throw error;
     }
   }
-}
 
+  // Verify network after switching
+  const verifiedChainId = String(
+    await ethereum.request({
+      method: 'eth_chainId',
+    })
+  ).toLowerCase();
+
+  console.log('BOT Chain verification:', {
+    verifiedChainId,
+    expectedChainId,
+  });
+
+  if (verifiedChainId !== expectedChainId) {
+    throw new Error(
+      `Wrong network. Expected BOT Chain Mainnet (${BOT_CHAIN.chainId}), received ${verifiedChainId}.`
+    );
+  }
+
+  console.log('✅ BOT Chain Mainnet verified');
+}
