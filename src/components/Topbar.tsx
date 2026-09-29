@@ -30,7 +30,7 @@ export default function Topbar({
 
       <div className="topbar-right">
         <span className="badge badge-orange">
-          {walletMode === 'evm' ? 'BOT Chain Mainnet' : 'Stacks Testnet'}
+          {walletMode === 'evm' ? 'BOT Chain Testnet' : 'Stacks Testnet'}
         </span>
         <button className="btn btn-primary btn-sm" onClick={onConnectClick}>
           {walletAddress
