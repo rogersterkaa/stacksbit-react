@@ -10,6 +10,8 @@ const CONTRACT_ABI = [
   'error NotBuyer()',
   'error WrongStatus()',
   'error PaymentNotFound()',
+  'error InsufficientAmount()',
+  'error AlreadyRegistered()',
 ];
 
 export async function getEVMProvider() {
@@ -50,6 +52,11 @@ export async function createPayment(description: string) {
 export async function payInvoice(paymentId: number, amountBOT: string) {
   const contract = await getEVMContract();
   const amountWei = ethers.parseEther(amountBOT);
+
+  // Test the payment first. If the contract would reject it, this throws
+  // before MetaMask asks for approval, so no gas is spent.
+  await contract.payInvoice.staticCall(paymentId, { value: amountWei });
+
   const tx = await contract.payInvoice(paymentId, { value: amountWei, gasLimit: 500000 });
   await tx.wait();
   return tx.hash;

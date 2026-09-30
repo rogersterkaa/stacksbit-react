@@ -3,6 +3,30 @@ import { payInvoice, ensureBOTChainNetwork } from '../chains/evm/contract';
 import { BOT_CHAIN } from '../chains/evm/config';
 import ConfirmDeliveryEVM from './ConfirmDeliveryEVM';
 
+function friendlyPayError(err: any): string {
+  if (err?.code === 'ACTION_REJECTED') {
+    return 'You rejected the transaction in MetaMask. Nothing was sent.';
+  }
+  const name = err?.revert?.name;
+  if (name === 'WrongStatus') {
+    return 'This payment cannot be paid right now. It may already be paid or completed. Ask the merchant for a new payment ID.';
+  }
+  if (name === 'PaymentNotFound') {
+    return 'No payment found with that ID. Check the ID with the merchant.';
+  }
+  if (name === 'InsufficientAmount') {
+    return 'The amount is too low for this payment.';
+  }
+  const msg = String(err?.shortMessage ?? err?.message ?? '');
+  if (msg.includes('coalesce') || msg.includes('ERR_CONNECTION') || msg.includes('network')) {
+    return 'Network connection problem. Nothing was sent. Check your connection and try again.';
+  }
+  if (msg.includes('insufficient funds')) {
+    return 'Not enough BOT in this wallet to cover the amount plus the network fee.';
+  }
+  return msg || 'Failed to pay invoice';
+}
+
 export default function PayInvoiceEVM() {
   const [paymentId, setPaymentId] = useState('');
   const [amount, setAmount] = useState('');
@@ -18,7 +42,7 @@ export default function PayInvoiceEVM() {
       const hash = await payInvoice(parseInt(paymentId), amount);
       setTxId(hash || null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to pay invoice');
+      setError(friendlyPayError(err));
     } finally {
       setIsSubmitting(false);
     }
