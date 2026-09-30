@@ -7,6 +7,9 @@ const CONTRACT_ABI = [
   'function payInvoice(uint256 paymentId) external payable',
   'function confirmDelivery(uint256 paymentId) external',
   'function registerMerchant(string calldata businessName, string calldata email) external',
+  'error NotBuyer()',
+  'error WrongStatus()',
+  'error PaymentNotFound()',
 ];
 
 export async function getEVMProvider() {
@@ -29,18 +32,17 @@ export async function getEVMContract() {
 export async function registerMerchant(businessName: string, email: string) {
   const contract = await getEVMContract();
   const tx = await contract.registerMerchant(businessName, email);
-  const receipt = await tx.wait();
-  return receipt?.transactionHash;
+  await tx.wait();
+  return tx.hash;
 }
 
 export async function createPayment(description: string) {
   const contract = await getEVMContract();
   const tx = await contract.createPayment(description);
   const receipt = await tx.wait();
-  
-  // Extract payment ID from events if needed
+
   return {
-    txHash: receipt?.transactionHash,
+    txHash: tx.hash,
     blockNumber: receipt?.blockNumber,
   };
 }
@@ -49,15 +51,15 @@ export async function payInvoice(paymentId: number, amountBOT: string) {
   const contract = await getEVMContract();
   const amountWei = ethers.parseEther(amountBOT);
   const tx = await contract.payInvoice(paymentId, { value: amountWei, gasLimit: 500000 });
-  const receipt = await tx.wait();
-  return receipt?.transactionHash;
+  await tx.wait();
+  return tx.hash;
 }
 
 export async function confirmDelivery(paymentId: number) {
   const contract = await getEVMContract();
   const tx = await contract.confirmDelivery(paymentId);
   await tx.wait();
-return tx.hash;
+  return tx.hash;
 }
 
 export async function ensureBOTChainNetwork() {
@@ -70,7 +72,6 @@ export async function ensureBOTChainNetwork() {
   // Normalize chain IDs because MetaMask may return lowercase hex.
   const expectedChainId = BOT_CHAIN.chainIdHex.toLowerCase();
 
-  // Check current network
   const currentChainId = String(
     await ethereum.request({
       method: 'eth_chainId',
@@ -83,13 +84,11 @@ export async function ensureBOTChainNetwork() {
     numericChainId: BOT_CHAIN.chainId,
   });
 
-  // Already on BOT Chain Mainnet
   if (currentChainId === expectedChainId) {
-    console.log('✅ Already connected to BOT Chain Mainnet');
+    console.log('Already connected to ' + BOT_CHAIN.name);
     return;
   }
 
-  // Switch to BOT Chain Mainnet
   try {
     await ethereum.request({
       method: 'wallet_switchEthereumChain',
@@ -118,7 +117,6 @@ export async function ensureBOTChainNetwork() {
     }
   }
 
-  // Verify network after switching
   const verifiedChainId = String(
     await ethereum.request({
       method: 'eth_chainId',
@@ -132,9 +130,9 @@ export async function ensureBOTChainNetwork() {
 
   if (verifiedChainId !== expectedChainId) {
     throw new Error(
-      `Wrong network. Expected BOT Chain Mainnet (${BOT_CHAIN.chainId}), received ${verifiedChainId}.`
+      `Wrong network. Expected ${BOT_CHAIN.name} (${BOT_CHAIN.chainId}), received ${verifiedChainId}.`
     );
   }
 
-  console.log('✅ BOT Chain Mainnet verified');
+  console.log(BOT_CHAIN.name + ' verified');
 }
