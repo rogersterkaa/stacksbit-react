@@ -7,11 +7,13 @@ const CONTRACT_ABI = [
   'function payInvoice(uint256 paymentId) external payable',
   'function confirmDelivery(uint256 paymentId) external',
   'function registerMerchant(string calldata businessName, string calldata email) external',
+  'event PaymentCreated(uint256 indexed paymentId, address indexed merchant, uint256 amount, string description)',
   'error NotBuyer()',
   'error WrongStatus()',
   'error PaymentNotFound()',
   'error InsufficientAmount()',
   'error AlreadyRegistered()',
+  'error NotRegistered()',
 ];
 
 export async function getEVMProvider() {
@@ -43,10 +45,21 @@ export async function createPayment(description: string) {
   const tx = await contract.createPayment(description);
   const receipt = await tx.wait();
 
-  return {
-    txHash: tx.hash,
-    blockNumber: receipt?.blockNumber,
-  };
+  // Read the payment ID from the PaymentCreated event
+  let paymentId: string | null = null;
+  for (const log of receipt?.logs ?? []) {
+    try {
+      const parsed = contract.interface.parseLog(log);
+      if (parsed?.name === 'PaymentCreated') {
+        paymentId = parsed.args.paymentId.toString();
+        break;
+      }
+    } catch {
+      // not an event from this contract
+    }
+  }
+
+  return { txHash: tx.hash, blockNumber: receipt?.blockNumber, paymentId };
 }
 
 export async function payInvoice(paymentId: number, amountBOT: string) {
