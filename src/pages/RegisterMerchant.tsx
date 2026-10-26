@@ -7,6 +7,16 @@ import { stringUtf8CV } from '@stacks/transactions';
 const CONTRACT_ADDR = 'ST3GTDAAVRPKHCC45FFW0540MPTDHGWWRMB5DS4Q0';
 const CONTRACT_NAME = 'stacksbit-gateway';
 
+function friendlyRegisterError(err: any): string {
+  if (err?.code === 'ACTION_REJECTED') {
+    return 'You rejected the transaction in MetaMask. Nothing was registered.';
+  }
+  if (err?.revert?.name === 'AlreadyRegistered') {
+    return 'This wallet is already registered as a merchant. You can go straight to Create Payment.';
+  }
+  return err instanceof Error ? err.message : 'Registration failed';
+}
+
 export default function RegisterMerchant() {
   const { merchantWallet, walletMode, connectWalletForRole, connectEVMWallet, evmWallet } = useWallet();
   const [step, setStep] = useState(1);
@@ -58,7 +68,7 @@ export default function RegisterMerchant() {
       setTxId(hash || null);
     }
   } catch (err) {
-    setError(err instanceof Error ? err.message : 'Registration failed');
+    setError(friendlyRegisterError(err));
     setIsSubmitting(false);
   }
 }
