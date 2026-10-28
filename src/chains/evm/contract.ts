@@ -14,7 +14,6 @@ const CONTRACT_ABI = [
   'error InsufficientAmount()',
   'error AlreadyRegistered()',
   'error NotRegistered()',
-  'error AlreadyRegistered()',
 ];
 
 export async function getEVMProvider() {
