@@ -1,4 +1,4 @@
-import { registerMerchant as registerMerchantEVM, ensureBOTChainNetwork } from '../chains/evm/contract';
+import { registerMerchant as registerMerchantEVM, ensureBOTChainNetwork, decodeRevert } from '../chains/evm/contract';
 import { useState } from 'react';
 import { useWallet } from '../context/WalletContext';
 import { openContractCall } from '@stacks/connect';
@@ -11,7 +11,7 @@ function friendlyRegisterError(err: any): string {
   if (err?.code === 'ACTION_REJECTED') {
     return 'You rejected the transaction in MetaMask. Nothing was registered.';
   }
-  if (err?.revert?.name === 'AlreadyRegistered') {
+    if (decodeRevert(err) === 'AlreadyRegistered') {
     return 'This wallet is already registered as a merchant. You can go straight to Create Payment.';
   }
   return err instanceof Error ? err.message : 'Registration failed';

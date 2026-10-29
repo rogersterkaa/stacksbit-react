@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { confirmDelivery, ensureBOTChainNetwork } from '../chains/evm/contract';
+import { confirmDelivery, ensureBOTChainNetwork, decodeRevert } from '../chains/evm/contract';
 import { BOT_CHAIN } from '../chains/evm/config';
 
 function friendlyError(err: any): string {
   if (err?.code === 'ACTION_REJECTED') {
     return 'You rejected the transaction in MetaMask. Nothing was sent.';
   }
-  const name = err?.revert?.name;
+   const name = decodeRevert(err);
   if (name === 'NotBuyer') {
     return 'Wrong account. Only the buyer who paid this invoice can confirm delivery. Switch accounts in MetaMask and try again.';
   }

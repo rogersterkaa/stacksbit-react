@@ -16,6 +16,21 @@ const CONTRACT_ABI = [
   'error NotRegistered()',
 ];
 
+const errorInterface = new ethers.Interface(CONTRACT_ABI);
+
+// Reads the name of a custom contract error (like AlreadyRegistered) from a failed call
+export function decodeRevert(err: any): string | undefined {
+  const data = err?.data ?? err?.info?.error?.data ?? err?.error?.data;
+  if (typeof data === 'string' && data.startsWith('0x')) {
+    try {
+      return errorInterface.parseError(data)?.name;
+    } catch {
+      // not one of our errors
+    }
+  }
+  return err?.revert?.name;
+}
+
 export async function getEVMProvider() {
   if (!(window as any).ethereum) {
     throw new Error('MetaMask not detected');

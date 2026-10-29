@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { createPayment, ensureBOTChainNetwork } from '../chains/evm/contract';
+import { createPayment, ensureBOTChainNetwork, decodeRevert } from '../chains/evm/contract';
 import { BOT_CHAIN } from '../chains/evm/config';
 
 function friendlyError(err: any): string {
   if (err?.code === 'ACTION_REJECTED') {
     return 'You rejected the transaction in MetaMask. Nothing was created.';
   }
-  const name = err?.revert?.name;
+    const name = decodeRevert(err);
   if (name === 'NotRegistered') {
     return 'This wallet is not registered as a merchant yet. Open Register Merchant, confirm it in MetaMask, then try again.';
   }
